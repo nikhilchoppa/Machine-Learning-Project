@@ -86,7 +86,7 @@ def main():
 
     # Run the gradient descent function
     eta = 0.5
-    iters = 40  # TODO: Anything above 40 produces optheta of [[nan][nan]]
+    iters = 40  # TODO: Anything above 40 produces optheta of [[nan][nan]]?
     optTheta, cost = gradientDescent(X, Y, theta, eta, iters)
     print("Optimal Theta: ", optTheta)
     # print("Cost: ", cost)
@@ -127,11 +127,11 @@ def main():
     ''' 
     Non-Linear regression with Elastic Net
     '''
-
     def GeneratePolynomialFeatures(X, polydegree):
         poly = PolynomialFeatures(degree=polydegree)
         polynomial_x = poly.fit_transform(X)
         return polynomial_x
+
 
     # @param alpha: The weight of the regularization term
     # @param l1_ratio: The ratio of L1 regularization to L2 regularization
@@ -162,7 +162,7 @@ def main():
     poly_degree_values = [2, 3, 4, 6, 8]
     plot_colors = ['red', 'blue', 'green', 'orange', 'purple']
     for i, degree in enumerate(poly_degree_values):
-        y_pred, model_coef = nonlinear_regression_elastic(X, Y, degree=degree, alpha=2, l1_ratio=0.5)
+        y_pred, model_coef = nonlinear_regression_elastic(X, Y, degree=degree, alpha=2, l1_ratio=0.9)
         plt.plot(data['Date'], y_pred, color=plot_colors[i], label=f"Predicted (Degree {degree})")
         plt.title(f"Microsoft Average Daily Stock Price (Elastic Net)")
         plt.xlabel('Date')
@@ -172,8 +172,23 @@ def main():
     plt.legend(poly_degree_values)
     plt.show()
 
+    '''
+    Classifying as "good" or "poor" performing stock
+    '''
+    # How many years of data to analyze
+    num_years = 10
+    recent_data = data.tail(252*num_years)
 
+    # Compute the year-over-year percentage change in closing prices for each year
+    yearly_pct_change = recent_data['Close'].pct_change(periods=252).groupby(recent_data['Date'].dt.year).mean()
+    sum_pct_change = yearly_pct_change.sum()
 
+    print(f"{num_years} Year Analysis: ")
+    # Classify the stock as "good" or "poor" performing based on the trend
+    if sum_pct_change > 0:
+        print("The stock is performing well (good).")
+    else:
+        print("The stock is performing poorly (poor).")
 
 
 
